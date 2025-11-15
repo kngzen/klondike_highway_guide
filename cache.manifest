@@ -1,0 +1,10 @@
+CACHE MANIFEST
+# v1.0.0
+
+CACHE:
+index.html
+
+NETWORK:
+*
+
+FALLBACK:
