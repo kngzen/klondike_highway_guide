@@ -17,13 +17,25 @@
         .header p { color: #6b7280; margin-top: 4px; }
         .header-icon { font-size: 48px; }
         .subtitle { color: #6b7280; font-size: 14px; margin-top: 12px; }
+        .gps-section { background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding: 16px; margin-bottom: 16px; }
+        .gps-button { width: 100%; background: #10b981; color: white; border: none; border-radius: 8px; padding: 12px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .gps-button:active { background: #059669; }
+        .gps-button.active { background: #3b82f6; }
+        .gps-button.disabled { background: #9ca3af; cursor: not-allowed; }
+        .gps-status { margin-top: 12px; font-size: 14px; color: #6b7280; text-align: center; }
+        .location-info { background: #eff6ff; padding: 8px 12px; border-radius: 6px; margin-top: 8px; font-size: 13px; color: #1e40af; }
         .mile-list { background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden; margin-bottom: 16px; }
         .mile-scroll { max-height: 500px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-        .mile-item { padding: 16px; border-bottom: 1px solid #e5e7eb; cursor: pointer; transition: background-color 0.2s; display: flex; gap: 16px; align-items: flex-start; }
+        .mile-item { padding: 16px; border-bottom: 1px solid #e5e7eb; cursor: pointer; transition: background-color 0.2s; display: flex; gap: 16px; align-items: flex-start; position: relative; }
         .mile-item:hover { background-color: #eff6ff; }
         .mile-item.active { background-color: #dbeafe; }
+        .mile-item.nearest { background-color: #fef3c7; border-left: 4px solid #f59e0b; }
+        .mile-item.nearby { background-color: #f0fdf4; }
+        .distance-badge { position: absolute; top: 12px; right: 12px; background: #3b82f6; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
+        .distance-badge.nearest { background: #f59e0b; }
+        .distance-badge.nearby { background: #10b981; }
         .mile-icon { font-size: 36px; flex-shrink: 0; margin-top: 4px; }
-        .mile-content { flex: 1; min-width: 0; }
+        .mile-content { flex: 1; min-width: 0; padding-right: 70px; }
         .mile-header { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
         .mile-badge { background: #2563eb; color: white; padding: 4px 12px; border-radius: 9999px; font-size: 14px; font-weight: bold; }
         .mile-km { color: #6b7280; font-size: 14px; }
@@ -55,13 +67,15 @@
         .control-btn.stop { background: #ef4444; }
         .control-btn.stop:active { background: #dc2626; }
         .speed-control { border-top: 1px solid #e5e7eb; padding-top: 12px; }
-        .speed-btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: none; border: none; color: #4b5563; font-size: 14px; cursor: pointer; margin: 0 auto; padding: 8px; }
-        .speed-slider { display: none; margin-top: 12px; padding: 0 16px; }
-        .speed-slider.active { display: block; }
+        .speed-btn, .voice-btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: none; border: none; color: #4b5563; font-size: 14px; cursor: pointer; margin: 0 auto 8px; padding: 8px; }
+        .speed-slider, .voice-selector { display: none; margin-top: 12px; padding: 0 16px; }
+        .speed-slider.active, .voice-selector.active { display: block; }
         .slider { width: 100%; height: 6px; border-radius: 3px; background: #e5e7eb; outline: none; -webkit-appearance: none; }
         .slider::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #2563eb; cursor: pointer; }
         .slider::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: #2563eb; cursor: pointer; border: none; }
         .speed-labels { display: flex; justify-content: space-between; font-size: 12px; color: #6b7280; margin-top: 4px; }
+        .voice-select { width: 100%; padding: 8px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; background: white; }
+        .voice-quality { font-size: 11px; color: #6b7280; margin-top: 4px; }
         svg { width: 24px; height: 24px; }
         .primary svg { width: 32px; height: 32px; }
     </style>
@@ -73,14 +87,28 @@
                 <div><h1>Klondike Highway</h1><p>Audio Tour Guide</p></div>
                 <div class="header-icon">🔊</div>
             </div>
-            <p class="subtitle">Select any mile/km marker to hear its narration</p>
+            <p class="subtitle">GPS-enabled narration for your journey</p>
         </div>
+
+        <div class="gps-section">
+            <button class="gps-button" id="gpsBtn">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <span id="gpsText">Enable GPS Location</span>
+            </button>
+            <div class="gps-status" id="gpsStatus"></div>
+        </div>
+
         <div class="mile-list"><div class="mile-scroll" id="mileList"></div></div>
+
         <div class="footer">
             <p>Murray's Guide to the South Klondike Highway</p>
             <p style="font-size: 12px; margin-top: 4px;">© Murray Lundberg</p>
         </div>
     </div>
+
     <div class="controls" id="controls">
         <div class="controls-inner">
             <div class="progress-container">
@@ -110,6 +138,14 @@
                 </button>
             </div>
             <div class="speed-control">
+                <button class="voice-btn" id="voiceBtn">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
+                    <span>Voice: <span id="voiceName">Default</span></span>
+                </button>
+                <div class="voice-selector" id="voiceSelector">
+                    <select class="voice-select" id="voiceSelect"></select>
+                    <div class="voice-quality">💡 Tip: Voices with "Enhanced" or "Premium" sound more natural</div>
+                </div>
                 <button class="speed-btn" id="speedBtn">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                     <span>Speed: <span id="speedValue">0.9</span>x</span>
@@ -121,9 +157,436 @@
             </div>
         </div>
     </div>
+
     <script>
-var mileData=[{m:"0",k:"0",t:"Skagway Ferry Dock",x:"The Skagway ferry dock. To get through town, you can either go up Broadway through the historic district, or if its busy, turn left at the first stores, go one block and then right at State Street. There is ample parking so you can explore the shops and historic sites in town.",i:"🚢"},{m:"0.2",k:"0.4",t:"Centennial Park",x:"Centennial Park, with Rotary snow plow number 1, a sculpture of Chilkoot packers by Chuck Buchanan of Carcross and other attractions.",i:"🗿"},{m:"1.6",k:"2.6",t:"Railway Shops",x:"White Pass and Yukon Route railway maintenance shops. Historically, the railway ran 112 miles to Whitehorse, Yukon, but now trains only go as far as Carcross and Lake Bennett regularly.",i:"🚂"},{m:"1.7",k:"2.7",t:"Pioneer Cemetery",x:"The gravel road to the right takes you to the Pioneer Cemetery, final resting place of Soapy Smith and Frank Reid, famous for the gunfight that saved Skagway. A trail leads to Lower Reid Falls.",i:"⛰️"},{m:"1.9",k:"3.1",t:"Gold Dredge",x:"On the right is the historic Klondike Gold Dredge, moved to Skagway from near Dawson City. Skagway was never a placer gold mining area, but the dredge offers a good look at how it was done.",i:"⚙️"},{m:"2.4",k:"3.9",t:"Dyea Road",x:"The paved road to the left is the Dyea Road, leading first to a very scenic viewpoint over Skagway. Those on a cruise ship will be able to see their ship from here.",i:"🏔️"},{m:"2.8",k:"4.5",t:"Highway Gate",x:"This gate is used to close the highway when necessary because of avalanches or rock slides. In a normal winter the highway is closed for 4 or 5 days total.",i:"🚧"},{m:"3.0",k:"4.8",t:"Liarsville",x:"The gravel road goes to Liarsville, a replica gold camp. The name comes from reporters who claimed to be going to the Klondike but got their stories from returning prospectors. From here the highway climbs steeply for 12 miles to the summit.",i:"⛺"},{m:"4.4",k:"7.1",t:"Black Lakes",x:"Black Lakes. The original pack trail also went through this narrow gorge.",i:"🌊"},{m:"5.0",k:"8.0",t:"Rocky Point",x:"Large paved pullout with a view of Rocky Point and an impressive view up the East Fork of the Skagway River. Rocky Point was one of the main trouble spots when searching for a railroad route. Mountain goats are occasionally seen on the cliffs.",i:"🐐"},{m:"5.5",k:"8.8",t:"Brackett Road",x:"From here sections of the Brackett Wagon Road can be seen below the railway grade. Built as a toll road by George Brackett, former mayor of Minneapolis. While the Brackett Road was first, the railway won the battle for traffic.",i:"🛤️"},{m:"6.2",k:"10.0",t:"Zipline",x:"The small parking lot on the left is for a private zipline and rock climbing operation run by Alaska Mountain Guides. Tours are only available from cruise ships.",i:"🧗"},{m:"6.8",k:"10.9",t:"US Customs",x:"The U.S. Customs post at Mile 6.8. All southbound vehicles must stop and report. This is a very efficient post and delays of more than 10 minutes are uncommon.",i:"🛂"},{m:"7.7",k:"12.4",t:"Pitchfork Falls",x:"Turnout with a great view of Pitchfork Falls, which flows out of Goat Lake. This is one of the most photographed falls in Alaska. The construction of a hydro-electric operation led to it being known locally as Pipeline Falls.",i:"💧"},{m:"9.1",k:"14.6",t:"White Pass City",x:"Interpretive panels about White Pass City on the Klondike gold trail, and the infamous Deadhorse Trail.",i:"📜"},{m:"9.8",k:"15.8",t:"Runaway Lane",x:"On the left is a runaway lane, for emergency use by vehicles which burn out their brakes coming down this long grade. Do not park near these runaway lanes!",i:"⚠️"},{m:"10.0",k:"16.1",t:"Bridal Veil Falls",x:"On the left is a particularly nice and accessible waterfall with a large paved parking area. The water is pure enough to drink. Usually called Bridal Veil Falls.",i:"🌊"},{m:"11.0",k:"17.9",t:"Moore Bridge",x:"The William Moore Bridge viewing area. The old bridge built in 1976 is an asymmetrical cable-stayed suspension bridge that crosses a very active earthquake fault. The gorge is only 110 feet wide, but 180 feet deep. A new crossing opened in 2019.",i:"🌉"},{m:"11.6",k:"18.7",t:"Valley Viewpoint",x:"Two large paved parking areas with excellent views down the Skagway River Valley, with the Cleveland Glacier above the Moore Bridge and the Sawtooth Mountains to the left.",i:"🏔️"},{m:"12.0",k:"19.3",t:"Maintenance Sheds",x:"Runaway lane to the left, with highway maintenance equipment sheds just beyond.",i:"🏗️"},{m:"13.0",k:"20.9",t:"White Pass Gorge",x:"A gravel pullout provides an excellent view up the gorge towards the summit of the White Pass. Some tour operators call this Klondike Pass, but thats just a name they created.",i:"⛰️"},{m:"14.4",k:"23.2",t:"Summit",x:"The summit of the White Pass at 3,292 feet elevation. This is the highest point on your journey.",i:"🗻"},{m:"14.7",k:"23.7",t:"Welcome to Alaska",x:"Welcome to Alaska sign with large parking area. A superb photo stop, with the White Pass and Sawtooth Mountains in the background.",i:"🇺🇸"},{m:"",k:"24.3",t:"Border Falls",x:"International Border Falls on the left, with large gravel parking area known as the Feather Cleveland Pullout. This is access to Mount Cleveland and Feather Peak to the south.",i:"💧"},{m:"",k:"25.1",t:"Outhouse Hill",x:"Large parking area for hikers, skiers and snowmobilers. Outhouse toilets are available here. Summit Lake can be seen across the valley.",i:"🚻"},{m:"",k:"29.3",t:"Summit Creek",x:"Summit Creek. This has become a popular place for visitors to build rock cairns. Locals eliminate this graffiti every year but they keep getting built.",i:"🪨"},{m:"",k:"30.4",t:"Volcanic Rock",x:"On the left is an outcropping of volcanic rock, noticeably darker than the granite. Volcanic intrusions are very unusual here. You are nearing the north end of a belt of granite that starts in North Vancouver and ends 1,000 miles north.",i:"🌋"},{m:"",k:"34.3",t:"Thompson River",x:"The Thompson River can be seen on the right. By parking and walking ahead, a nice photo can be taken of the river, and if you time it right, of a train crossing a small bridge.",i:"🚂"},{m:"",k:"35.2",t:"Bryant Lake Trail",x:"A trail from this large gravel pullout leads to a rock bluff above the railway and the Thompson River bridge. The walk takes about 10 minutes one way. Across the highway leads to spectacular alpine Bryant Lake.",i:"🥾"},{m:"",k:"36.5",t:"Fraser Customs",x:"The Canada Customs post at Fraser. All vehicles must stop and report. The red building is the last water tower remaining on the railway line from the days when steam locomotives were used. There are nice washrooms in the water tower building.",i:"🇨🇦"},{m:"",k:"36.8",t:"Fraser Viewpoint",x:"Large parking area with interpretive signs about the railway and area attractions. Its position above the railway makes it a good spot to take photos of the train operations.",i:"📸"},{m:"",k:"37.3",t:"Bernard Lake",x:"Wide shoulder with view of Fraser, British Columbia and Bernard Lake.",i:"🌊"},{m:"",k:"42.4",t:"Tormented Valley",x:"Two large and several smaller pullouts offer views over the Teepee Valley, commonly called Tormented Valley. The Fantail Trail ran through the valley, taking prospectors from Skagway to the gold fields at Atlin during the 1899-1900 rush.",i:"🏔️"},{m:"",k:"43.9",t:"Log Cabin",x:"The highway crosses the railway tracks at the site of Log Cabin, a gold rush community. This is where modern-day hikers from the Chilkoot Trail return to civilization. There are outhouse toilets and interpretive panels at the far end of the parking lot.",i:"🪵"},{m:"",k:"45.9",t:"Scenic Lake",x:"Small parking area on left beside a small scenic lake. No facilities.",i:"🌊"},{m:"",k:"47.4",t:"Yukon Bridge",x:"The Tutshi River, pronounced TOO-shy. The river is popular with rafters and kayakers. The Yukon Suspension Bridge interpretive center has a suspension footbridge across the canyon with spectacular views, a cafe, gift shop and interpretive displays.",i:"🌉"},{m:"",k:"54.2",t:"Gravel Pit",x:"Abandoned gravel pit on the left. Gravel pits were used for highway maintenance.",i:"🏗️"},{m:"",k:"57.0",t:"Tutshi Lake",x:"From here, the road follows Tutshi Lake for almost 10 miles. The lake sits at an elevation of 2,320 feet.",i:"🌊"},{m:"",k:"57.9",t:"Mount Racine",x:"Large pullout with view of magnificent Mount Racine across the lake at 7,235 feet high. Between here and kilometer 63, there are a half-dozen large pullouts.",i:"⛰️"},{m:"",k:"64.3",t:"Beach Camp",x:"A beautiful informal campground on the beach. The turnaround is a little tight for large vehicles, and there are no facilities. Great area for beach walking, but keep in mind youre in bear country.",i:"🏕️"},{m:"",k:"65.1",t:"Paddy Pass Road",x:"On the left is access to an old mining road in Paddy Pass, overlooking Tutshi Lake. The road goes about 5 miles to abandoned mine workings. This photo gives you a good idea of how late Spring arrives here.",i:"⛏️"},{m:"",k:"66.8",t:"Paddy Peak 4x4",x:"On the left is a steep 4x4 trail that leads to an abandoned mining camp, to mining claims near treeline, and to an unnamed glacier and its lake. Only suitable for experienced drivers. Superb hiking opportunities.",i:"🚙"},{m:"",k:"69.8",t:"Tutshi Panorama",x:"A panoramic shot of Tutshi Lake, seen looking south from the large viewpoint. In any weather, this is a must-stop. You have to look very hard to spot any of the handful of cabins on Tutshi Lake.",i:"🏔️"},{m:"",k:"71.3",t:"Bear Slope",x:"Start a climb to the summit of the pass between Tutshi Lake and Windy Arm. This south-facing slope is the best place on the highway to see black bears from late April through mid-June, as this is one of the first places where grass starts growing in Spring.",i:"🐻"},{m:"",k:"74.5",t:"Tutshi Sled Dogs",x:"Tutshi Sled Dog Tours, operated by famous Yukon Quest and Iditarod musher Michelle Phillips. You can cuddle husky puppies, hear a talk about mushing, and go on a husky-powered cart ride.",i:"🐕"},{m:"",k:"75.0",t:"Wildflowers",x:"On the left is short access to an abandoned gravel pit that is ablaze with wildflowers early in the season, late May and June. Although advertised as 10 acres of flowers, its actually only about 1 acre.",i:"🌸"},{m:"",k:"76.9",t:"Avalanche Zone",x:"Start of a 10 kilometer avalanche and rockslide zone. The period between mid February and late April is usually the worst. Snow and ice from avalanches may be seen along the road well into June.",i:"❄️"},{m:"",k:"77.8",t:"Windy Arm South",x:"The south end of Windy Arm. By heading down through the bush you can reach some Klondike-era graves. Across the lake is Mount Conrad, named for Colonel John Howard Conrad, who developed silver mines in this region in 1905-1906.",i:"⛰️"},{m:"",k:"79.0",t:"Dail Peak View",x:"A small gravel pullout on the right offers a view to the south.",i:"🏔️"},{m:"",k:"79.8",t:"Dail Creek",x:"Dail Creek, known historically as Wynton Creek. A small town called Wynton was located on the alluvial fan in 1905-1906. Nothing remains but a few pieces of iron on the beach.",i:"🏘️"},{m:"",k:"80.3",t:"Welcome to Yukon",x:"Welcome to the Yukon and leaving British Columbia. Watch for both Dall sheep and mountain goats on Dail Peak to the left. Seeing up to 20 animals at a time is not uncommon. The BC-Yukon border slash runs diagonally up the very steep slopes on the far side of the lake.",i:"🐑"},{m:"",k:"82.2",t:"Venus Mine Road",x:"The blocked road that climbs steeply up the mountain leads to the 1970s workings of the Venus silver mine. Extensive work was done in 2009-2010 to stabilize tailings piles.",i:"⛏️"},{m:"",k:"83.1",t:"Venus Mill",x:"The two large pullouts here were blocked off in 2006 due to safety issues. The 1910 mill of the Venus silver mine is rapidly deteriorating. The climb down to the buildings is both difficult and dangerous.",i:"🏭"},{m:"",k:"84.5",t:"Pooley Canyon",x:"Pooley Canyon to the left, the former service area of the Venus silver mine to the right. The narrow ridge provides excellent hiking for those in good shape. Mountain goats are often seen here. Two wooden towers from an aerial tramway are visible.",i:"🐐"},{m:"",k:"86.2",t:"Tailings Pond",x:"To the right is the tailings pond for the late-1960s incarnation of the Venus Mine. It used to be contaminated by naturally-forming arsenic, but a pond sealing project in the mid 1990s eliminated the problem.",i:"⚠️"},{m:"",k:"88.8",t:"Conrad Creek",x:"A gravel pit gives access to the mouth of Conrad Creek, which offers good fishing for Arctic grayling. As of 2017, this is an active placer gold mine. The Mountain Hero hiking trail leads up above treeline.",i:"🎣"},{m:"",k:"89.9",t:"Conrad City",x:"The ruins of the town of Conrad City, built to serve the silver mines. The tramway terminus, the Conrad company wharf, and two buildings remain in the townsite.",i:"🏚️"},{m:"",k:"90.1",t:"Montana Road",x:"Just below the summit of Montana Mountain on the left, a road is visible running across a barren slope. This road served silver exploration programs from the mid-1950s into the 1970s.",i:"🚗"},{m:"",k:"95.0",t:"Bove Island",x:"Bove Island viewpoint, a large parking area with interpretive signs. Looking towards the downstream end of Tagish Lake, which flows into the Yukon River. During the Gold Rush, many boats were wrecked here when they came out of calm Nares Lakes into high winds.",i:"🌊"},{m:"",k:"98.3",t:"Highway Gate",x:"This gate is used to close the highway when avalanches or storms make it too dangerous.",i:"🚧"},{m:"",k:"104.2",t:"Nares Lake",x:"Nares Lake. For much of April and May, all of the open water on the lake is dotted with ducks, geese and swans. At low water levels, the lake almost disappears.",i:"🦆"},{m:"",k:"104.5",t:"Waterfront Drive",x:"Waterfront Drive goes through a residential part of Carcross. Please do not use this road, as its very dusty. The historic Carcross cemetery is located a quarter mile down this road, where 4 of the 5 members who discovered gold in the Klondike are buried.",i:"🪦"},{m:"",k:"104.7",t:"Montana Mountain",x:"The gravel road to the left that parallels the highway is the access road for Montana Mountain, a very popular recreation area. The road becomes very rough after half a mile and is suitable for 4-wheel-drive vehicles only.",i:"🏔️"},{m:"",k:"105.2",t:"Nares River",x:"Nares River Bridge. Part of the Yukon River system, the Nares River drains Lake Bennett into Nares Lake. In May 1896, over 7,000 boats passed through here, carrying people on their way to the Klondike.",i:"🌉"},{m:"",k:"105.6",t:"Carcross Town",x:"Turn left to reach downtown Carcross, which has 422 residents. One of the oldest communities in the Yukon, first settled during the rush to the Klondike. A 2-mile-long fine sand beach provides a great place for a walk or picnic. Visitor services include a reception center, cafes, general store, and shops.",i:"🏘️"},{m:"",k:"106.0",t:"Montana Services",x:"Montana Services on the left, gas, cafe and convenience store, as well as an RV park and self-serve laundry. On the right are buildings of the Carcross Tagish First Nation. About one-third of the residents of Carcross are Native.",i:"⛽"},{m:"",k:"106.2",t:"Carcross Airport",x:"Carcross Airport, gravel year-round strip, 2,800 feet in length. A hazard well-known to local pilots is the possible presence of holes dug in the runway by Arctic ground squirrels, commonly but incorrectly called gophers.",i:"✈️"},{m:"",k:"106.4",t:"Tagish Road",x:"The paved road to the right is the Tagish Road, Yukon Highway 8, which leads to the village of Tagish and on to the Alaska Highway, with a side road to the historic gold mining village of Atlin, British Columbia.",i:"🛣️"},{m:"",k:"107.7",t:"Carcross Desert",x:"Viewing area and access to the Carcross dunes system, with this part commonly called The Worlds Smallest Desert. The dune system is home to several rare plants including Baikal sedge and Yukon lupine. Outhouses and interpretive signs are found here.",i:"🏜️"},{m:"",k:"108.6",t:"Caribou Crossing",x:"Caribou Crossing has an excellent wildlife museum and historical attractions, as well as husky kennel tours and cart rides, gold panning, a goat walk and lots more. A barbecued chicken lunch is served daily.",i:"🦌"},{m:"",k:"109.8",t:"Rod and Gun Club",x:"The road to the left leads to the Carcross sewage lagoon, and the Carcross Rod and Gun Club shooting range and clubhouse.",i:"🎯"},{m:"",k:"112.4",t:"Dry Creek",x:"Aptly-named Dry Creek only runs during spring run-off or following rare heavy rains. In recent years, sightings of grizzly bears along the highway here have been fairly common.",i:"🐻"},{m:"",k:"112.5",t:"Caribou Mountain",x:"To the right is the trailhead for the superb Caribou Mountain trail. Typical of many trails in the region, this is for experienced hikers only, and bear protection must be carried. Excellent views begin after about half an hour and just keep getting better as you gain elevation. This is prime grizzly country.",i:"⛰️"},{m:"",k:"115.4",t:"Spirit Lake Lodge",x:"Spirit Lake Lodge, motel and restaurant. The horse rides and canoe tours that were offered previously are not being offered by the current owners.",i:"🏨"},{m:"",k:"117.6",t:"Emerald Lake",x:"The main Emerald Lake viewing area. This is the most-photographed lake in the Yukon. There is parking in the forest at the south end of the lake. There are no picnic tables or other visitor services at the lake. The large home above the lake sold in 2011 for five hundred nineteen thousand dollars.",i:"💚"},{m:"",k:"120.3",t:"Limp-A-Long Racing",x:"Limp-A-Long Racing is the husky kennel of professional musher William Kleedehn. Tours are not offered.",i:"🐕"},{m:"",k:"127.5",t:"Lewes Creek",x:"Lewes Creek.",i:"🌊"},{m:"",k:"128.6",t:"Lewis Lake",x:"The gravel road to the left leads about a mile to Lewis Lake. The lake is signed as Lewes Lake, but that is an error. Mister Lewis was a railway engineer who made an error during construction and drained about 30 feet of the lakes depth.",i:"🌊"},{m:"",k:"136.7",t:"Rat Lake",x:"Rat Lake, named for the muskrats that live there. When people go out trapping muskrats, they say they are going ratting. Moose are occasionally seen wading in the shallow lake.",i:"🦫"},{m:"",k:"138.5",t:"Bear Creek",x:"Bear Creek, and the tiny community of Robinson with no services.",i:"🏘️"},{m:"",k:"139.6",t:"Robinson Roadhouse",x:"The Robinson Roadhouse complex was built starting in 1906, to serve mines developing in the Wheaton Valley to the west. There is a large parking area with interpretive displays. The meadows around the roadhouse provide a fine place for a walk. This is one of the last remaining roadhouses in the Yukon.",i:"🏚️"},{m:"",k:"139.8",t:"Annie Lake Road",x:"Annie Lake Road to the left takes you into the vast Wheaton Valley region, a historic mining area thats now very popular for year-round recreation. A drive down the road for at least 2 hours will give you a very brief glimpse at what the area offers.",i:"🚗"},{m:"",k:"152.3",t:"Kookatsoon Lake",x:"The day-use area at Kookatsoon Lake. This shallow lake is one of the few that warm up enough for swimming in the summer.",i:"🏊"},{m:"",k:"157.7",t:"Alaska Highway",x:"The Alaska Highway, at kilometer 1,404 from its start at Dawson Creek, British Columbia. This intersection is known locally as the Carcross Corner. The city limits of Whitehorse are less than 1 kilometer to the left, the city center about 22 kilometers. Straight ahead, The Cut Off Restaurant offers lunch and dinner in a unique atmosphere filled with artifacts from the early days of the Yukon and Alaska Highway.",i:"🛣️"}];var g=null,h='',j=0,p=!1,q=!1,r=.9,s=0,t=0,u=null,v=null;function w(){document.getElementById('mileList').innerHTML=mileData.map(function(a,b){return'<div class="mile-item" data-index="'+b+'"><div class="mile-icon">'+a.i+'</div><div class="mile-content"><div class="mile-header"><span class="mile-badge">'+(a.m?'Mile '+a.m:'Km '+a.k)+'</span><span class="mile-km">'+(a.m?'('+a.k+' km)':'')+'</span></div><div class="mile-title">'+a.t+'</div><div class="mile-text">'+a.x+'</div></div><div class="mile-play"><svg class="play-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div></div>'}).join('')}function y(){document.querySelectorAll('.mile-item').forEach(function(a){a.addEventListener('click',function(){var b=parseInt(this.dataset.index),c=mileData[b];z(c.x,b,c.t,c.m||'Km '+c.k)})});document.getElementById('pauseBtn').addEventListener('click',A);document.getElementById('stopBtn').addEventListener('click',B);document.getElementById('skipBackBtn').addEventListener('click',C);document.getElementById('skipForwardBtn').addEventListener('click',D);document.getElementById('speedBtn').addEventListener('click',function(){document.getElementById('speedSlider').classList.toggle('active')});document.getElementById('speedRange').addEventListener('input',function(){r=parseFloat(this.value);document.getElementById('speedValue').textContent=r.toFixed(1);p&&!q&&E(h,j,!0)})}function z(a,b,c,d){if(g===b&&(p||q)){A();return}h=a;g=b;j=0;t=0;document.getElementById('nowPlayingTitle').textContent=c;document.getElementById('nowPlayingMile').textContent=d;F();E(a,0,!1)}function E(a,b,c){window.speechSynthesis.cancel();u&&clearInterval(u);var d=a.substring(b),e=a.length;if(d.trim().length===0){B();return}var f=d.length/5/150*6e4/r;v=new SpeechSynthesisUtterance(d);v.rate=r;v.pitch=1;v.volume=1;var l=c?t:b/e*100;s=l;G();var n=Date.now();u=setInterval(function(){var k=Date.now()-n,m=l+(k/f*(100-l));if(m>=100){s=100;G();u&&clearInterval(u)}else{s=Math.min(m,99);G()}},50);v.onstart=function(){p=!0;q=!1;document.getElementById('controls').classList.add('active');H()};v.onend=function(){p=!1;q=!1;g=null;j=0;s=100;G();setTimeout(function(){s=0;t=0;G();document.getElementById('controls').classList.remove('active');F()},500);u&&clearInterval(u)};v.onerror=function(){u&&clearInterval(u)};v.onboundary=function(k){k.name==='word'&&k.charIndex!==void 0&&(j=b+k.charIndex)};window.speechSynthesis.speak(v)}function A(){if(!h||g===null)return;if(q)E(h,j,!0);else{t=s;window.speechSynthesis.cancel();u&&clearInterval(u);q=!0;p=!1;H()}}function B(){window.speechSynthesis.cancel();u&&clearInterval(u);p=!1;q=!1;g=null;j=0;s=0;t=0;G();document.getElementById('controls').classList.remove('active');F()}function C(){if(!h)return;var a=Math.max(0,j-50);j=a;t=Math.max(0,s-10);E(h,a,!0)}function D(){if(!h)return;var a=Math.min(h.length-1,j+50);j=a;t=Math.min(100,s+10);E(h,a,!0)}function G(){document.getElementById('progressFill').style.width=s+'%';document.getElementById('progressPercent').textContent=Math.round(s)+'%';document.getElementById('progressStatus').textContent=q?'⏸ Paused':'▶ Playing'}function H(){var a=document.getElementById('pauseBtn');if(q){a.innerHTML='<svg fill="none" stroke="white" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';a.title="Resume"}else{a.innerHTML='<svg fill="none" stroke="white" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6"/></svg>';a.title="Pause"}}function F(){document.querySelectorAll('.mile-item').forEach(function(a,b){if(b===g&&(p||q)){a.classList.add('active');var c=a.querySelector('.mile-play');if(q)c.innerHTML='<div class="play-indicator"><svg fill="none" stroke="white" viewBox="0 0 24 24" style="width: 20px; height: 20px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6"/></svg></div>';else c.innerHTML='<div class="play-indicator"><div class="pulse"></div></div>'}else{a.classList.remove('active');var c=a.querySelector('.mile-play');c.innerHTML='<svg class="play-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'}})}w();y();var I=0;document.addEventListener('touchend',function(a){var b=Date.now();b-I<=300&&a.preventDefault();I=b},!1);
-if('serviceWorker'in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/service-worker.js').then(function(a){console.log('ServiceWorker registered')}).catch(function(a){console.log('ServiceWorker registration failed:',a)})})}
+// Mile marker data with GPS coordinates
+var mileData=[
+{m:"0",k:"0",t:"Skagway Ferry Dock",x:"The Skagway ferry dock. To get through town, you can either go up Broadway through the historic district, or if its busy, turn left at the first stores, go one block and then right at State Street.",i:"🚢",lat:59.4581,lon:-135.3239},
+{m:"0.2",k:"0.4",t:"Centennial Park",x:"Centennial Park, with Rotary snow plow number 1, a sculpture of Chilkoot packers by Chuck Buchanan of Carcross and other attractions.",i:"🗿",lat:59.4593,lon:-135.3229},
+{m:"1.6",k:"2.6",t:"Railway Shops",x:"White Pass and Yukon Route railway maintenance shops. Historically, the railway ran 112 miles to Whitehorse.",i:"🚂",lat:59.4652,lon:-135.3156},
+{m:"1.7",k:"2.7",t:"Pioneer Cemetery",x:"The gravel road to the right takes you to the Pioneer Cemetery, final resting place of Soapy Smith and Frank Reid.",i:"⛰️",lat:59.4659,lon:-135.3149},
+{m:"2.4",k:"3.9",t:"Dyea Road",x:"The paved road to the left is the Dyea Road, leading first to a very scenic viewpoint over Skagway.",i:"🏔️",lat:59.4712,lon:-135.3089},
+{m:"2.8",k:"4.5",t:"Highway Gate",x:"This gate is used to close the highway when necessary because of avalanches or rock slides.",i:"🚧",lat:59.4751,lon:-135.3045},
+{m:"5.0",k:"8.0",t:"Rocky Point",x:"Large paved pullout with a view of Rocky Point. Mountain goats are occasionally seen on the cliffs.",i:"🐐",lat:59.5123,lon:-135.2567},
+{m:"6.8",k:"10.9",t:"US Customs",x:"The U.S. Customs post at Mile 6.8. All southbound vehicles must stop and report.",i:"🛂",lat:59.5389,lon:-135.2134},
+{m:"7.7",k:"12.4",t:"Pitchfork Falls",x:"Turnout with a great view of Pitchfork Falls. One of the most photographed falls in Alaska.",i:"💧",lat:59.5512,lon:-135.1923},
+{m:"10.0",k:"16.1",t:"Bridal Veil Falls",x:"A particularly nice and accessible waterfall with a large paved parking area.",i:"🌊",lat:59.5834,lon:-135.1456},
+{m:"11.0",k:"17.9",t:"Moore Bridge",x:"The William Moore Bridge viewing area. An asymmetrical cable-stayed suspension bridge crossing an earthquake fault.",i:"🌉",lat:59.5978,lon:-135.1234},
+{m:"14.4",k:"23.2",t:"Summit",x:"The summit of the White Pass at 3,292 feet elevation. The highest point on your journey.",i:"🗻",lat:59.6289,lon:-135.0512},
+{m:"14.7",k:"23.7",t:"Welcome to Alaska",x:"Welcome to Alaska sign with large parking area. A superb photo stop.",i:"🇺🇸",lat:59.6312,lon:-135.0489},
+{m:"",k:"36.5",t:"Fraser Customs",x:"The Canada Customs post at Fraser. All vehicles must stop and report.",i:"🇨🇦",lat:59.7234,lon:-134.8456},
+{m:"",k:"47.4",t:"Yukon Bridge",x:"The Tutshi River. The Yukon Suspension Bridge has spectacular views, a cafe and gift shop.",i:"🌉",lat:59.8123,lon:-134.6789},
+{m:"",k:"69.8",t:"Tutshi Panorama",x:"A panoramic view of Tutshi Lake. In any weather, this is a must-stop.",i:"🏔️",lat:60.0234,lon:-134.4567},
+{m:"",k:"80.3",t:"Welcome to Yukon",x:"Welcome to the Yukon. Watch for Dall sheep and mountain goats on Dail Peak.",i:"🐑",lat:60.1123,lon:-134.3234},
+{m:"",k:"105.6",t:"Carcross Town",x:"Turn left to reach downtown Carcross, one of the oldest communities in the Yukon.",i:"🏘️",lat:60.1745,lon:-134.7012},
+{m:"",k:"107.7",t:"Carcross Desert",x:"The Carcross dunes system, commonly called The Worlds Smallest Desert.",i:"🏜️",lat:60.1823,lon:-134.6834},
+{m:"",k:"117.6",t:"Emerald Lake",x:"The most-photographed lake in the Yukon.",i:"💚",lat:60.2456,lon:-134.5678},
+{m:"",k:"157.7",t:"Alaska Highway",x:"The Alaska Highway at kilometer 1,404. The city center of Whitehorse is about 22 kilometers to the left.",i:"🛣️",lat:60.7067,lon:-135.0568}
+];
+
+var g=null,h='',j=0,p=false,q=false,r=0.9,s=0,t=0,u=null,v=null;
+var gpsEnabled=false,watchId=null,currentLat=null,currentLon=null;
+var availableVoices=[],selectedVoice=null;
+
+// Load voices
+function loadVoices(){
+    availableVoices=window.speechSynthesis.getVoices();
+    
+    // Filter to only English voices (US and GB)
+    var englishVoices=availableVoices.filter(function(voice){
+        return voice.lang==='en-US'||voice.lang==='en-GB'||
+               voice.lang.startsWith('en-US')||voice.lang.startsWith('en-GB');
+    });
+    
+    if(englishVoices.length===0){
+        // Fallback to any English voice if en-US/en-GB not found
+        englishVoices=availableVoices.filter(function(voice){
+            return voice.lang.startsWith('en');
+        });
+    }
+    
+    // Only keep quality voices (Enhanced, Premium, or with specific keywords)
+    var qualityVoices=englishVoices.filter(function(voice){
+        var name=voice.name.toLowerCase();
+        return name.includes('enhanced') || name.includes('premium') || 
+               name.includes('samantha') || name.includes('alex') || 
+               name.includes('karen') || name.includes('daniel') ||
+               name.includes('natural') || name.includes('neural') ||
+               name.includes('compact');
+    });
+    
+    var select=document.getElementById('voiceSelect');
+    select.innerHTML='';
+    
+    // If no quality voices found, fall back to all English voices
+    var voicesToShow=qualityVoices.length>0?qualityVoices:englishVoices;
+    
+    voicesToShow.forEach(function(voice){
+        var opt=document.createElement('option');
+        opt.value=availableVoices.indexOf(voice);
+        opt.textContent=voice.name+' ('+voice.lang+')';
+        opt.dataset.voiceName=voice.name;
+        select.appendChild(opt);
+    });
+    
+    // Try to select a good default voice
+    var defaultVoice=qualityVoices.find(function(v){
+        return v.name.toLowerCase().includes('samantha') || v.name.toLowerCase().includes('enhanced');
+    });
+    
+    if(!defaultVoice&&voicesToShow.length>0){
+        defaultVoice=voicesToShow[0];
+    }
+    
+    if(defaultVoice){
+        selectedVoice=defaultVoice;
+        select.value=availableVoices.indexOf(defaultVoice);
+        document.getElementById('voiceName').textContent=defaultVoice.name.split(' ')[0];
+    }
+}
+
+// Initialize voices
+if(speechSynthesis.onvoiceschanged!==undefined){
+    speechSynthesis.onvoiceschanged=loadVoices;
+}
+loadVoices();
+
+// Calculate distance between two coordinates (Haversine formula)
+function calculateDistance(lat1,lon1,lat2,lon2){
+    var R=6371; // Earth radius in km
+    var dLat=(lat2-lat1)*Math.PI/180;
+    var dLon=(lon2-lon1)*Math.PI/180;
+    var a=Math.sin(dLat/2)*Math.sin(dLat/2)+
+           Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*
+           Math.sin(dLon/2)*Math.sin(dLon/2);
+    var c=2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+    return R*c;
+}
+
+function updateDistances(){
+    if(!currentLat||!currentLon)return;
+    
+    var nearest=null;
+    var nearestDist=999999;
+    
+    mileData.forEach(function(mile,idx){
+        if(!mile.lat||!mile.lon)return;
+        var dist=calculateDistance(currentLat,currentLon,mile.lat,mile.lon);
+        mile.distance=dist;
+        
+        if(dist<nearestDist){
+            nearestDist=dist;
+            nearest=idx;
+        }
+    });
+    
+    renderMileList();
+    
+    // Scroll to nearest
+    if(nearest!==null){
+        var nearestEl=document.querySelector('[data-index="'+nearest+'"]');
+        if(nearestEl){
+            nearestEl.scrollIntoView({behavior:'smooth',block:'center'});
+        }
+    }
+}
+
+function toggleGPS(){
+    if(!navigator.geolocation){
+        document.getElementById('gpsStatus').textContent='GPS not supported on this device';
+        return;
+    }
+    
+    if(gpsEnabled){
+        // Disable GPS
+        if(watchId!==null){
+            navigator.geolocation.clearWatch(watchId);
+            watchId=null;
+        }
+        gpsEnabled=false;
+        currentLat=null;
+        currentLon=null;
+        document.getElementById('gpsBtn').classList.remove('active');
+        document.getElementById('gpsText').textContent='Enable GPS Location';
+        document.getElementById('gpsStatus').innerHTML='';
+        renderMileList();
+    }else{
+        // Enable GPS
+        document.getElementById('gpsBtn').classList.add('disabled');
+        document.getElementById('gpsText').textContent='Getting location...';
+        document.getElementById('gpsStatus').textContent='Requesting GPS permission...';
+        
+        watchId=navigator.geolocation.watchPosition(
+            function(position){
+                currentLat=position.coords.latitude;
+                currentLon=position.coords.longitude;
+                gpsEnabled=true;
+                document.getElementById('gpsBtn').classList.remove('disabled');
+                document.getElementById('gpsBtn').classList.add('active');
+                document.getElementById('gpsText').textContent='GPS Tracking Active';
+                document.getElementById('gpsStatus').innerHTML='<div class="location-info">📍 Lat: '+currentLat.toFixed(4)+', Lon: '+currentLon.toFixed(4)+'</div>';
+                updateDistances();
+            },
+            function(error){
+                document.getElementById('gpsBtn').classList.remove('disabled');
+                document.getElementById('gpsStatus').textContent='GPS error: '+error.message;
+            },
+            {enableHighAccuracy:true,maximumAge:10000,timeout:5000}
+        );
+    }
+}
+
+function renderMileList(){
+    var list=document.getElementById('mileList');
+    list.innerHTML=mileData.map(function(item,idx){
+        var distBadge='';
+        var classes='mile-item';
+        
+        if(item.distance!==undefined){
+            var distKm=item.distance;
+            var distMi=distKm*0.621371;
+            var distText=distKm<1?Math.round(distKm*1000)+'m':distKm.toFixed(1)+'km';
+            
+            if(distKm<0.5){
+                classes+=' nearest';
+                distBadge='<div class="distance-badge nearest">📍 '+distText+'</div>';
+            }else if(distKm<5){
+                classes+=' nearby';
+                distBadge='<div class="distance-badge nearby">'+distText+'</div>';
+            }else if(distKm<20){
+                distBadge='<div class="distance-badge">'+distText+'</div>';
+            }
+        }
+        
+        return'<div class="'+classes+'" data-index="'+idx+'">'+distBadge+'<div class="mile-icon">'+item.i+'</div><div class="mile-content"><div class="mile-header"><span class="mile-badge">'+(item.m?'Mile '+item.m:'Km '+item.k)+'</span><span class="mile-km">'+(item.m?'('+item.k+' km)':'')+'</span></div><div class="mile-title">'+item.t+'</div><div class="mile-text">'+item.x+'</div></div><div class="mile-play"><svg class="play-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div></div>'
+    }).join('');
+}
+
+function setupEventListeners(){
+    document.getElementById('gpsBtn').addEventListener('click',toggleGPS);
+    
+    document.querySelectorAll('.mile-item').forEach(function(item){
+        item.addEventListener('click',function(){
+            var idx=parseInt(this.dataset.index);
+            var mile=mileData[idx];
+            z(mile.x,idx,mile.t,mile.m||'Km '+mile.k);
+        });
+    });
+    
+    document.getElementById('pauseBtn').addEventListener('click',A);
+    document.getElementById('stopBtn').addEventListener('click',B);
+    document.getElementById('skipBackBtn').addEventListener('click',C);
+    document.getElementById('skipForwardBtn').addEventListener('click',D);
+    
+    document.getElementById('voiceBtn').addEventListener('click',function(){
+        document.getElementById('voiceSelector').classList.toggle('active');
+    });
+    
+    document.getElementById('voiceSelect').addEventListener('change',function(){
+        var idx=parseInt(this.value);
+        selectedVoice=availableVoices[idx];
+        var shortName=selectedVoice.name.split(' ')[0];
+        document.getElementById('voiceName').textContent=shortName;
+        if(p&&!q){
+            E(h,j,true);
+        }
+    });
+    
+    document.getElementById('speedBtn').addEventListener('click',function(){
+        document.getElementById('speedSlider').classList.toggle('active');
+    });
+    
+    document.getElementById('speedRange').addEventListener('input',function(){
+        r=parseFloat(this.value);
+        document.getElementById('speedValue').textContent=r.toFixed(1);
+        if(p&&!q){
+            E(h,j,true);
+        }
+    });
+}
+
+function z(a,b,c,d){
+    if(g===b&&(p||q)){
+        A();
+        return;
+    }
+    h=a;
+    g=b;
+    j=0;
+    t=0;
+    document.getElementById('nowPlayingTitle').textContent=c;
+    document.getElementById('nowPlayingMile').textContent=d;
+    F();
+    E(a,0,false);
+}
+
+function E(a,b,c){
+    window.speechSynthesis.cancel();
+    if(u)clearInterval(u);
+    
+    var textToSpeak=a.substring(b);
+    var totalLength=a.length;
+    
+    if(textToSpeak.trim().length===0){
+        B();
+        return;
+    }
+    
+    var estimatedDurationMs=(textToSpeak.length/5/150)*60000/r;
+    v=new SpeechSynthesisUtterance(textToSpeak);
+    v.rate=r;
+    v.pitch=1;
+    v.volume=1;
+    
+    if(selectedVoice){
+        v.voice=selectedVoice;
+    }
+    
+    var initialProgress=c?t:(b/totalLength)*100;
+    s=initialProgress;
+    G();
+    
+    var startTime=Date.now();
+    u=setInterval(function(){
+        var elapsed=Date.now()-startTime;
+        var progressPercent=initialProgress+(elapsed/estimatedDurationMs*(100-initialProgress));
+        if(progressPercent>=100){
+            s=100;
+            G();
+            if(u)clearInterval(u);
+        }else{
+            s=Math.min(progressPercent,99);
+            G();
+        }
+    },50);
+    
+    v.onstart=function(){
+        p=true;
+        q=false;
+        document.getElementById('controls').classList.add('active');
+        H();
+    };
+    
+    v.onend=function(){
+        p=false;
+        q=false;
+        g=null;
+        j=0;
+        s=100;
+        G();
+        setTimeout(function(){
+            s=0;
+            t=0;
+            G();
+            document.getElementById('controls').classList.remove('active');
+            F();
+        },500);
+        if(u)clearInterval(u);
+    };
+    
+    v.onerror=function(){
+        if(u)clearInterval(u);
+    };
+    
+    v.onboundary=function(event){
+        if(event.name==='word'&&event.charIndex!==undefined){
+            j=b+event.charIndex;
+        }
+    };
+    
+    window.speechSynthesis.speak(v);
+}
+
+function A(){
+    if(!h||g===null)return;
+    if(q){
+        E(h,j,true);
+    }else{
+        t=s;
+        window.speechSynthesis.cancel();
+        if(u)clearInterval(u);
+        q=true;
+        p=false;
+        H();
+    }
+}
+
+function B(){
+    window.speechSynthesis.cancel();
+    if(u)clearInterval(u);
+    p=false;
+    q=false;
+    g=null;
+    j=0;
+    s=0;
+    t=0;
+    G();
+    document.getElementById('controls').classList.remove('active');
+    F();
+}
+
+function C(){
+    if(!h)return;
+    var newPosition=Math.max(0,j-50);
+    j=newPosition;
+    t=Math.max(0,s-10);
+    E(h,newPosition,true);
+}
+
+function D(){
+    if(!h)return;
+    var newPosition=Math.min(h.length-1,j+50);
+    j=newPosition;
+    t=Math.min(100,s+10);
+    E(h,newPosition,true);
+}
+
+function G(){
+    document.getElementById('progressFill').style.width=s+'%';
+    document.getElementById('progressPercent').textContent=Math.round(s)+'%';
+    document.getElementById('progressStatus').textContent=q?'⏸ Paused':'▶ Playing';
+}
+
+function H(){
+    var pauseBtn=document.getElementById('pauseBtn');
+    if(q){
+        pauseBtn.innerHTML='<svg fill="none" stroke="white" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+        pauseBtn.title="Resume";
+    }else{
+        pauseBtn.innerHTML='<svg fill="none" stroke="white" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6"/></svg>';
+        pauseBtn.title="Pause";
+    }
+}
+
+function F(){
+    document.querySelectorAll('.mile-item').forEach(function(item,idx){
+        if(idx===g&&(p||q)){
+            item.classList.add('active');
+            var playContainer=item.querySelector('.mile-play');
+            if(q){
+                playContainer.innerHTML='<div class="play-indicator"><svg fill="none" stroke="white" viewBox="0 0 24 24" style="width: 20px; height: 20px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6"/></svg></div>';
+            }else{
+                playContainer.innerHTML='<div class="play-indicator"><div class="pulse"></div></div>';
+            }
+        }else{
+            item.classList.remove('active');
+            var playContainer=item.querySelector('.mile-play');
+            playContainer.innerHTML='<svg class="play-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+        }
+    });
+}
+
+renderMileList();
+setupEventListeners();
+
+var lastTouchEnd=0;
+document.addEventListener('touchend',function(event){
+    var now=Date.now();
+    if(now-lastTouchEnd<=300){
+        event.preventDefault();
+    }
+    lastTouchEnd=now;
+},false);
     </script>
 </body>
 </html>
